@@ -50,9 +50,9 @@ app.post("/api/users", function (req, res) {
 // Add exercises
 app.post("/api/users/:_id/exercises", function (req, res) {
   user_id = req.params._id;
-  User.findById(user_id, (err, data) => {
+  User.findById(user_id, (err, userData) => {
     if (err) return console.error(err);
-    username = data.username;
+    username = userData.username;
     let exercise = new Exercise({
       username: username,
       description: req.body.description,
@@ -62,7 +62,7 @@ app.post("/api/users/:_id/exercises", function (req, res) {
     exercise.save((err, data) => {
       if (err) return console.error(err);
       res.json({
-        _id: data._id,
+        _id: userData._id,
         username: username,
         date: data.date.toDateString(),
         duration: data.duration,
@@ -122,25 +122,6 @@ app.get("/api/users/:_id/logs?", function (req, res) {
         });
       });
     }
-  });
-});
-
-app.get("/api/users/:_id/exercises", function (req, res) {
-  user_id = req.params._id;
-  User.findById(user_id, (err, userData) => {
-    if (err) return console.error(err);
-    username = userData.username;
-    Exercise.find({ username: username }, (err, exerciseData) => {
-      if (err) return console.error(err);
-      console.log(exerciseData)
-      res.json({
-        _id: userData._id,
-        username: userData.username,
-        description: exerciseData.description,
-        duration: exerciseData.duration,
-        date: exerciseData.date ? exercise.date.toDateString() : new Date().toDateString()
-      });
-    });
   });
 });
 
