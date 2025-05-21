@@ -64,7 +64,7 @@ app.post("/api/users/:_id/exercises", function (req, res) {
       res.json({
         _id: userData._id,
         username: username,
-        date: data.date.toDateString(),
+        date: data.date ? new Date(data.date).toDateString() : new Date().toDateString(),
         duration: data.duration,
         description: data.description,
       });
@@ -74,9 +74,9 @@ app.post("/api/users/:_id/exercises", function (req, res) {
 
 app.get("/api/users/:_id/logs?", function (req, res) {
   user_id = req.params._id;
-  User.findById(user_id, (err, data) => {
+  User.findById(user_id, (err, userData) => {
     if (err) return console.error(err);
-    username = data.username;
+    username = userData.username;
     // /api/users/:_id/logs?[from][&to]
     if (req.query.from || req.query.to) {
       let dateObj = {};
@@ -114,11 +114,16 @@ app.get("/api/users/:_id/logs?", function (req, res) {
     else {
       Exercise.find({ username: username }, (err, data) => {
         if (err) return console.error(err);
+        const log = data.map(exercise => ({
+          description: exercise.description,
+          duration: exercise.duration,
+          date: exercise.date ? new Date(exercise.date).toDateString() : "Invalid Date"
+        }));
         res.json({
-          _id: data._id,
+          _id: userData._id,
           username: username,
           count: data.length,
-          log: data,
+          log: log,
         });
       });
     }
