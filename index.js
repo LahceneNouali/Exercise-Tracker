@@ -125,6 +125,25 @@ app.get("/api/users/:_id/logs?", function (req, res) {
   });
 });
 
+app.get("/api/users/:_id/exercises", function (req, res) {
+  user_id = req.params._id;
+  User.findById(user_id, (err, userData) => {
+    if (err) return console.error(err);
+    username = userData.username;
+    Exercise.find({ username: username }, (err, exerciseData) => {
+      if (err) return console.error(err);
+      console.log(exerciseData)
+      res.json({
+        _id: userData._id,
+        username: userData.username,
+        description: exerciseData.description,
+        duration: exerciseData.duration,
+        date: exerciseData.date ? exercise.date.toDateString() : new Date().toDateString()
+      });
+    });
+  });
+});
+
 app.get("/api/users", function (req, res) {
   User.find({}, (err, data) => {
     if (err) return console.error(err);
